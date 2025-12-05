@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Docusynth Upload</title>
+    <!-- <link rel="stylesheet" href="./style.css" /> -->
+  </head>
+  <body>
+    <h2>Docusynth — upload project ZIP</h2>
+    <form id="form">
+      <input type="file" id="zipfile" accept=".zip" />
+      <button type="submit" id="submit">Generate Docs</button>
+      <span id="status"></span>
+    </form>
+    <a id="downloadLink" style="display: none">Download docs</a>
+    <div>
+      <progress id="progressBar" value="0" max="100"></progress>
+      <span id="progressText"></span>
+    </div>
+
+    <script src="./index/index.js"></script>
+  </body>
+</html>
