@@ -4,7 +4,7 @@ import multer from "multer";
 import archiver from "archiver";
 import dotenv from "dotenv";
 import path from "path";
-import { fileURLToPath } from "url"; // <-- MUST import this
+import { fileURLToPath } from "url";
 import { extractFilesFromZip } from "./fileUtils.js";
 import { generateDocs } from "./docsGenerator.js";
 
@@ -24,48 +24,51 @@ const upload = multer({
   limits: { fileSize: 200 * 1024 * 1024 },
 });
 
-// <-- ADD THIS HERE, after middleware, before your POST route
+// Serve frontend
 app.get("/", (req, res) => {
   res.sendFile(path.resolve(__dirname, "../static/index.html"));
 });
 
-// Your existing POST /upload-zip route
+// Upload ZIP and generate docs
 app.post("/upload-zip", upload.single("project"), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
 
+    const projectName = req.file.originalname.replace(/\.zip$/i, "");
     const files = extractFilesFromZip(req.file.buffer);
-    const docs = await generateDocs(
-      req.file.originalname.replace(/\.zip$/i, ""),
-      files
-    );
 
-    // Stream ZIP to client
+    const docs = await generateDocs(projectName, files);
+
+    // ZIP headers
     res.setHeader("Content-Type", "application/zip");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${req.file.originalname.replace(
-        /\.zip$/i,
-        "_docs.zip"
-      )}"`
+      `attachment; filename="${projectName}_docs.zip"`
     );
 
     const archive = archiver("zip", { zlib: { level: 9 } });
+
     archive.on("error", (err) => {
       console.error("ARCHIVER ERROR:", err);
-      if (!res.headersSent)
+      if (!res.headersSent) {
         res.status(500).json({ error: "Failed to create ZIP" });
+      }
     });
 
     archive.pipe(res);
 
-    // Add main docs
+    // ---- Main docs (UNCHANGED) ----
     archive.append(docs.readme || "", { name: "README.md" });
     archive.append(docs.api || "", { name: "API.md" });
     archive.append(docs.contributing || "", { name: "CONTRIBUTING.md" });
     archive.append(docs.architecture || "", { name: "ARCHITECTURE.md" });
 
-    // Add per-file explanations
+    // ---- Unified documentation (NEW) ----
+    archive.append(docs.unified || "", { name: "DOCUMENTATION.md" });
+
+    // ---- Per-file explanations (UNCHANGED) ----
     for (const [fname, md] of Object.entries(docs.fileExplanations)) {
       const safeName = fname.replace(/[\/\\]/g, "_") + ".md";
       archive.append(md || "", { name: `file-explanations/${safeName}` });
@@ -74,8 +77,12 @@ app.post("/upload-zip", upload.single("project"), async (req, res) => {
     await archive.finalize();
   } catch (err) {
     console.error("Server error:", err);
-    if (!res.headersSent) res.status(500).json({ error: "Server error" });
+    if (!res.headersSent) {
+      res.status(500).json({ error: "Server error" });
+    }
   }
 });
 
-app.listen(8001, () => console.log("Server running on http://127.0.0.1:8001"));
+app.listen(8001, () => {
+  console.log("Server running on http://127.0.0.1:8001");
+});
