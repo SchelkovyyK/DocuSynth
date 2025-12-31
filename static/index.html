@@ -1,20 +1,260 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Docusynth Upload</title>
-    <link rel="stylesheet" href="./style.css" />
-  </head>
-  <body>
-    <h2>Docusynth — upload project ZIP</h2>
-    <form id="form">
-      <input type="file" id="zipfile" accept=".zip" />
-      <button type="submit" id="submit">Generate Docs</button>
-      <span id="status"></span>
-    </form>
-    <a id="downloadLink" style="display: none">Download docs</a>
-    <div class="loader" style="display: none"></div>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DocuSynth — Documentation Hub</title>
+  <meta name="description" content="AI-powered documentation synthesis dashboard mockup" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="topbar" role="banner">
+    <div class="container topbar-inner">
+      <a class="brand" href="#" aria-label="DocuSynth home">
+        <!-- simple inline logo -->
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="5" fill="#4B6CF7"/>
+          <path d="M8 12h8M8 8h8" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <span class="brand-text">DocuSynth</span>
+      </a>
 
-    <script src="./index/index.js"></script>
-  </body>
+      <nav class="nav" role="navigation" aria-label="Main">
+        <a id="navProjects" class="nav-link active" href="#" data-view="projects">Projects</a>
+        <a id="navDocs" class="nav-link" href="#" data-view="docs">Docs</a>
+      </nav>
+
+
+      <div class="top-actions">
+        <button id="btnNewProject" class="btn btn-primary" aria-haspopup="dialog">+ New Project</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main" role="main">
+  <!-- PROJECTS VIEW -->
+  <section id="projects-view" class="view" aria-hidden="false">
+    <section class="hero">
+      <h1 class="hero-title">Documentation Hub</h1>
+      <p class="hero-sub">AI-powered documentation synthesis for your codebase</p>
+    </section>
+
+    <section class="stats" aria-label="Statistics summary">
+      <div class="stat-card">
+        <div class="stat-icon">📁</div>
+        <div class="stat-number">0</div>
+        <div class="stat-label">Projects</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📄</div>
+        <div class="stat-number">0</div>
+        <div class="stat-label">Files Analyzed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">{ }</div>
+        <div class="stat-number">0</div>
+        <div class="stat-label">Functions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔲</div>
+        <div class="stat-number">0</div>
+        <div class="stat-label">Classes</div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <div class="search-wrap">
+        <label for="search" class="visually-hidden">Search projects</label>
+        <input id="search" class="search-input" placeholder="Search projects..." aria-label="Search projects" />
+      </div>
+      <button id="btnFilter" class="btn btn-outline" aria-pressed="false">Filter</button>
+    </section>
+
+    <section id="projects" class="projects">
+      <article class="empty-state" role="region" aria-labelledby="emptyTitle">
+        <div class="empty-illustration">✨</div>
+        <h2 id="emptyTitle">Start your first project</h2>
+        <p>Add a code repository to generate comprehensive, hallucination-free documentation</p>
+        <button id="createProject" class="btn btn-cta">+ Create Project</button>
+      </article>
+    </section>
+  </section>
+
+  <!-- DOCS VIEW (hidden by default) -->
+  <section id="docs-view" class="view" aria-hidden="true" style="display:none;">
+    <section class="doc-hero">
+      <div class="doc-badge">Documentation</div>
+      <h1 class="hero-title">How DocuSynth Works</h1>
+      <p class="hero-sub">A fully grounded documentation workflow that eliminates hallucination through AST parsing, dependency analysis, and deterministic LLM synthesis.</p>
+
+      <div class="doc-search-wrap">
+        <label for="docSearch" class="visually-hidden">Search documentation</label>
+        <input id="docSearch" class="search-input" placeholder="Search documentation..." aria-label="Search documentation" />
+      </div>
+
+      <div class="doc-tabs" role="tablist" aria-label="Docs sections">
+        <button class="tab-button active" role="tab" aria-selected="true" data-target="doc-key">Key Concepts</button>
+        <button class="tab-button" role="tab" aria-selected="false" data-target="doc-work">Workflow</button>
+        <button class="tab-button" role="tab" aria-selected="false" data-target="doc-api">API Reference</button>
+      </div>
+    </section>
+
+    <section id="doc-key" class="doc-panel" aria-hidden="false">
+      <div class="doc-card">
+        <div class="doc-card-heading">
+          <div class="doc-card-icon">{"</>"}</div>
+          <div>
+            <h3>AST Parsing</h3>
+            <div class="doc-card-sub">Compiler-level extraction of function signatures, classes, parameters, and types</div>
+          </div>
+        </div>
+        <div class="doc-card-body">
+          <p><strong>AST Parsing</strong><br/>Abstract Syntax Tree (AST) parsing is the foundation of DocuSynth's factual metadata extraction.</p>
+          <ul>
+            <li><strong>What Gets Extracted:</strong> Function signatures, names, parameters, return types, class definitions, imports, decorators.</li>
+            <li><strong>Why AST Over Regex:</strong> Understands code structure semantically, handles nested/complex patterns, provides accurate locations.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-card-heading">
+          <div class="doc-card-icon">🧭</div>
+          <div>
+            <h3>Dependency Graphs</h3>
+            <div class="doc-card-sub">Module-level context through import analysis and relationship mapping</div>
+          </div>
+        </div>
+        <div class="doc-card-body">
+          <p>DocuSynth builds comprehensive dependency graphs to understand module relationships.</p>
+          <ul>
+            <li><strong>Graph Types:</strong> File→Module mapping, import graphs, class inheritance trees, call graphs.</li>
+            <li><strong>Use in Docs:</strong> Cross-references, module purpose, identifying public vs internal APIs.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-card-heading">
+          <div class="doc-card-icon">⚙️</div>
+          <div>
+            <h3>LLM Synthesis</h3>
+            <div class="doc-card-sub">Deterministic documentation generation using grounded metadata</div>
+          </div>
+        </div>
+        <div class="doc-card-body">
+          <p>The LLM layer generates human-readable documentation from structured metadata.</p>
+          <ul>
+            <li><strong>Synthesis Steps:</strong> Module summarization, function documentation, cross-module coherence, markdown formatting.</li>
+            <li><strong>Grounding Strategy:</strong> Only references extracted metadata, validates claims against AST data, never fabricates signatures.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="doc-work" class="doc-panel" aria-hidden="true" style="display:none;">
+  <div class="doc-card workflow-card">
+    <h2 class="workflow-title">Documentation Pipeline Workflow</h2>
+
+    <ol class="workflow-list" aria-label="Documentation workflow steps">
+      <li class="workflow-step">
+        <div class="step-index" aria-hidden="true">1</div>
+        <div class="step-body">
+          <h4 class="step-title">Repository Intake</h4>
+          <p class="step-desc">User selects or uploads a code repository. System initializes language-specific analyzers.</p>
+        </div>
+      </li>
+
+      <li class="workflow-step">
+        <div class="step-index" aria-hidden="true">2</div>
+        <div class="step-body">
+          <h4 class="step-title">Structural Code Analysis</h4>
+          <p class="step-desc">AST parser processes each file. Function signatures, classes, inheritance, decorators, imports are extracted.</p>
+        </div>
+      </li>
+
+      <li class="workflow-step">
+        <div class="step-index" aria-hidden="true">3</div>
+        <div class="step-body">
+          <h4 class="step-title">Metadata Validation</h4>
+          <p class="step-desc">Metadata is cleaned and normalized into a unified schema. Inconsistencies are flagged.</p>
+        </div>
+      </li>
+
+      <li class="workflow-step">
+        <div class="step-index" aria-hidden="true">4</div>
+        <div class="step-body">
+          <h4 class="step-title">Documentation Synthesis</h4>
+          <p class="step-desc">LLM produces summaries using structured metadata: purpose, parameters, returns, exceptions, examples.</p>
+        </div>
+      </li>
+
+      <li class="workflow-step">
+        <div class="step-index" aria-hidden="true">5</div>
+        <div class="step-body">
+          <h4 class="step-title">Diagram Construction</h4>
+          <p class="step-desc">Tool generates UML class diagrams, dependency graphs, and call graphs.</p>
+        </div>
+      </li>
+
+      <li class="workflow-step">
+        <div class="step-index" aria-hidden="true">6</div>
+        <div class="step-body">
+          <h4 class="step-title">Final Assembly</h4>
+          <p class="step-desc">System organizes all Markdown files, adds diagrams, and applies a consistent template.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+    <section id="doc-api" class="doc-panel" aria-hidden="true" style="display:none;">
+      <div class="doc-card">
+        <div class="doc-card-heading">
+          <div class="doc-card-icon">📡</div>
+          <div>
+            <h3>API Reference (overview)</h3>
+            <div class="doc-card-sub">Endpoints, payloads and usage examples</div>
+          </div>
+        </div>
+        <div class="doc-card-body">
+          <p>Short overview of the programmatic interfaces used by DocuSynth. (Full reference in a dedicated page.)</p>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
+
+
+  <!-- Simple modal for creating a project -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modalTitle">
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h3 id="modalTitle">Create new project</h3>
+        <button id="modalClose" class="modal-close" aria-label="Close">✕</button>
+      </header>
+      <form id="projectForm" class="modal-body" enctype="multipart/form-data">
+  <label class="field">
+    <span class="field-label">Repository URL (optional)</span>
+    <input type="url" id="repoUrl" name="repoUrl" placeholder="https://github.com/username/repo" />
+  </label>
+  <label class="field">
+    <span class="field-label">Or Upload ZIP file</span>
+    <input type="file" id="zipFile" name="zipFile" accept=".zip" />
+  </label>
+  <label class="field">
+    <span class="field-label">Project name</span>
+    <input type="text" id="projectName" name="projectName" placeholder="My project" required />
+  </label>
+  <div class="modal-actions">
+    <button type="button" id="modalCancel" class="btn btn-outline">Cancel</button>
+    <button type="submit" class="btn btn-primary">Create</button>
+  </div>
+</form>
+
+    </div>
+  </div>
+
+  <script src="index/script.js" defer></script>
+</body>
 </html>
