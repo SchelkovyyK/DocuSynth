@@ -2,7 +2,6 @@ import fs from "fs";
 import path from "path";
 import { globSync } from "glob";
 
-/* Same ignore rules as ZIP */
 const IGNORED_FOLDERS = [
   "node_modules",
   ".git",

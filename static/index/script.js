@@ -9,9 +9,6 @@
 
   const projectsStore = [];
 
-  /* =========================
-     MODAL
-  ========================= */
 
   function openModal() {
     modal.setAttribute("aria-hidden", "false");
@@ -28,9 +25,6 @@
   modalClose.onclick = closeModal;
   modalCancel.onclick = closeModal;
 
-  /* =========================
-     LOAD SAVED PROJECTS
-  ========================= */
 
   async function loadProjects() {
     const res = await fetch("/projects");
@@ -51,9 +45,6 @@
 
   loadProjects();
 
-  /* =========================
-     CREATE PROJECT
-  ========================= */
 
   projectForm.onsubmit = async (e) => {
     e.preventDefault();
@@ -69,7 +60,6 @@
       return;
     }
 
-    // ❗ рівно ОДНЕ джерело
     if (!zip && !repoUrl) {
       alert("Provide either a ZIP file or a GitHub URL");
       return;
@@ -98,7 +88,6 @@
       let res;
 
       if (zip) {
-        // ZIP FLOW
         const fd = new FormData();
         fd.append("project", zip);
 
@@ -107,7 +96,6 @@
           body: fd,
         });
       } else {
-        // GITHUB FLOW
         res = await fetch("/upload-github", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -133,9 +121,6 @@
     }
   };
 
-  /* =========================
-     CARD RENDERING
-  ========================= */
 
   function addOrUpdateCard(p) {
     let card = projectsEl.querySelector(`[data-id="${p.id}"]`);
@@ -179,9 +164,6 @@
     `;
   }
 
-  /* =========================
-     DOWNLOAD
-  ========================= */
 
   function downloadDocs(p) {
     if (p.docsBlob) {

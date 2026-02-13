@@ -2,9 +2,6 @@ import dotenv from "dotenv";
 dotenv.config();
 import Groq from "groq-sdk";
 
-/* =========================
-   Helpers
-========================= */
 
 function sanitizeContent(text) {
   return text.replace(/(API_KEY|SECRET|PASSWORD|TOKEN)=.*$/gim, "$1=REDACTED");
@@ -17,9 +14,6 @@ function mdAnchor(title) {
     .replace(/\s+/g, "-");
 }
 
-/* =========================
-   Unified Markdown Builder
-========================= */
 
 function buildUnifiedMarkdown(projectName, docs) {
   const toc = [];
@@ -60,9 +54,6 @@ function buildUnifiedMarkdown(projectName, docs) {
   return md;
 }
 
-/* =========================
-   Groq Setup
-========================= */
 
 if (!process.env.GROQ_API_KEY) {
   throw new Error("GROQ_API_KEY is missing!");
@@ -70,12 +61,8 @@ if (!process.env.GROQ_API_KEY) {
 
 const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-/* =========================
-   STEP 1 — CODEBASE ANALYSIS
-========================= */
 
 async function analyzeCodebase(files) {
-  // Limit size so we don't explode token usage
   const snapshot = files
     .slice(0, 40)
     .map(
@@ -116,9 +103,6 @@ Return a concise, factual analysis in plain English.
   return resp.choices[0].message.content;
 }
 
-/* =========================
-   STEP 2 — MAIN DOC PROMPT
-========================= */
 
 function buildMainPrompt(projectName, analysis) {
   return `
@@ -152,9 +136,6 @@ Return VALID JSON:
 `;
 }
 
-/* =========================
-   File Explanation
-========================= */
 
 async function generateFileExplanation(file) {
   const prompt = `
@@ -192,9 +173,6 @@ async function tryGenerateFile(file, retries = 2) {
   }
 }
 
-/* =========================
-   MAIN EXPORT
-========================= */
 
 export async function generateDocs(projectName, files, onProgress) {
   let analysis;
@@ -236,7 +214,6 @@ export async function generateDocs(projectName, files, onProgress) {
     };
   }
 
-  // Generate per-file explanations
   const fileExplanations = {};
   let completed = 0;
   for (const file of files) {

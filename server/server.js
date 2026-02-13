@@ -23,16 +23,10 @@ import {
 
 dotenv.config();
 
-/* =========================
-   PATH SETUP
-========================= */
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-/* =========================
-   APP SETUP
-========================= */
 
 const app = express();
 
@@ -42,30 +36,21 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.resolve(__dirname, "../static")));
 
-/* =========================
-   MULTER (ZIP UPLOAD)
-========================= */
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 200 * 1024 * 1024 }, // 200MB
+  limits: { fileSize: 200 * 1024 * 1024 }, 
 });
 
-/* =========================
-   ROUTES
-========================= */
 
-// Frontend
 app.get("/", (_, res) => {
   res.sendFile(path.resolve(__dirname, "../static/index.html"));
 });
 
-// List projects
 app.get("/projects", (_, res) => {
   res.json(listProjects());
 });
 
-// Download docs
 app.get("/projects/:name/download", (req, res) => {
   const zipPath = getDocsZip(req.params.name);
   if (!zipPath || !fs.existsSync(zipPath)) {
@@ -74,15 +59,11 @@ app.get("/projects/:name/download", (req, res) => {
   res.download(zipPath);
 });
 
-// Delete project
 app.delete("/projects/:name", (req, res) => {
   deleteProject(req.params.name);
   res.json({ ok: true });
 });
 
-/* =========================
-   ZIP FLOW
-========================= */
 
 app.post("/upload-zip", upload.single("project"), async (req, res) => {
   try {
@@ -114,9 +95,6 @@ app.post("/upload-zip", upload.single("project"), async (req, res) => {
   }
 });
 
-/* =========================
-   GITHUB FLOW
-========================= */
 
 app.post("/upload-github", async (req, res) => {
   console.log("UPLOAD GITHUB HIT", req.body);
@@ -157,9 +135,6 @@ app.post("/upload-github", async (req, res) => {
   }
 });
 
-/* =========================
-   HELPERS
-========================= */
 
 async function buildDocsZip(zipPath, docs) {
   return new Promise((resolve, reject) => {
@@ -187,9 +162,6 @@ async function buildDocsZip(zipPath, docs) {
   });
 }
 
-/* =========================
-   START SERVER
-========================= */
 
 app.listen(8001, () => {
   console.log("Server running at http://127.0.0.1:8001");
